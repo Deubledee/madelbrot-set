@@ -1,16 +1,15 @@
 
-import { PolymerElement, html } from '@polymer/polymer';
 import '@polymer/app-route/app-location';
 import '@polymer/app-route/app-route';
 import '@polymer/iron-pages/iron-pages';
-import '@polymer/iron-selector/iron-selector';
 import '@polymer/paper-button';
-import './elements/special-canvas';
+import { html, PolymerElement } from '@polymer/polymer';
+import { html as litHtml, render } from 'lit-html';
+import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import './elements/special-anchor';
-import { tracePath } from './functions/trace';
-import { fillPixels } from './functions/pixels';
+import './elements/special-canvas';
 
-class mandelbrotSet extends fillPixels(tracePath(PolymerElement)) {
+class mandelbrotSet extends PolymerElement {
     static get template() {
         return html`
         <style>
@@ -20,39 +19,44 @@ class mandelbrotSet extends fillPixels(tracePath(PolymerElement)) {
         #container {
             box-sizing: border-box;
             display: grid;
-            grid-template-columns: auto;
-            grid-template-rows: [row1-start] 50px [row1-end] 100px [third-line] auto [last-line];            
-            align-items: center;
+            grid-template-columns: [col2] auto;
+            grid-template-rows: [row1] 100px [row2] 150px [row3] 100px [row4] auto [row4] 100px;
+            padding: 10px;
+            grid-template-areas: 
+                "header"
+                "links"
+                "buttons"
+                "main"
+                "footer";       
             grid-gap: 10px;
-            padding: 15px;
-        }
-
-        .first {
-            grid-row-start: 1;
-            grid-auto-flow: column;
-            display: grid;
-        }
-        .second {
-            grid-row-start: 2;
-            grid-auto-flow: column;
-            display: grid;
-            grid-template-columns: 50% 50%;
-            justify-items: center;
-           /* justify-self: center;*/
-        }
-
-        .third {
-            grid-row-end: 4;
-            height: 600px;
-            justify-self: center;
         }
 
         .strech {
+            grid-area: header; 
             box-sizing: border-box;
             padding: 20px;
             background-color: rgb(234, 240, 243);
             color: cadetblue;
             text-align: center;
+        }
+        .first {
+            grid-area: links;
+            display: grid;
+            grid-template-columns: 33.25% 33.25% 33.25%;
+        }
+        .second {
+            grid-area: buttons;
+            display: grid;
+            grid-template-columns: 50% 50%;
+        }
+
+        .third {
+            grid-area: main; 
+            height: 600px;
+        }
+        footer{            
+            grid-area: footer;
+            justify-self: center;
         }
         .button1{
             justify-self: end;
@@ -67,57 +71,59 @@ class mandelbrotSet extends fillPixels(tracePath(PolymerElement)) {
             max-height: 12px;
         }
         </style>
-        <app-location route="{{route}}"></app-location>
-        <app-route route="{{route}}" pattern="/:method" data="{{routeData}}" tail="{{subRoute}}" query-params="{{query}}"></app-route>
+        <app-location route="{{route}}">
+        </app-location>
+        <app-route route="{{route}}" pattern="/:method" data="{{routeData}}" tail="{{subRoute}}" query-params="{{query}}">
+        </app-route>
 
-        <h2 class="strech">The Mandelbrot set By Deubledee</h2>
         <div id='container'>
-
-            <nav class="first">
-                <section>
-                    <special-anchor unresolved href="[[rootPath]]home" text="Home"></special-anchor>
-                </section>
-                <section>
-                    <special-anchor unresolved href="[[rootPath]]pixels?state=stop" text="Pixels"></special-anchor>
-                </section>
-                <section>   
-                    <special-anchor unresolved href="[[rootPath]]path?state=stop" text="Path"></special-anchor>
-                </section>  
+            <h2 class="strech">The Mandelbrot set By Deubledee</h2>
+            <nav  class="first"> 
+                <slot name="anchors">
+                </slot>
             </nav>
-
             <dom-if if="[[method]]">
                 <template>
-                    <nav name="methods" class="second">
-                        <div class="button1">
+                    <nav class="second">
+                        <div  class="button1">
                             <paper-button title="start">
-                            <special-anchor unresolved href="[[rootPath]][[method]]?state=start" text="Sart"></special-anchor>
+                                <special-anchor type="button" href="[[rootPath]][[method]]?state=start" text="Start">
+                                </special-anchor>
                             </paper-button>
                         </div>
                         <div class="button2">            
                             <paper-button title="stop">
-                            <special-anchor unresolved href="[[rootPath]][[method]]?state=stop" text="Stop"></special-anchor>
+                                <special-anchor type="button" href="[[rootPath]][[method]]?state=stop" text="Stop">
+                                </special-anchor>
                             </paper-button>
                         </div>
                     </nav>
                 </template>    
             </dom-if>
+            
             <div class='third'>
                 <iron-pages selected="[[page]]" attr-for-selected="name">
                     <div name="home">
                         <h3> The Mandelbrot set with CANVAS </h3>
                         <ul>
-                            <li> about the project </li>
                             <li> by Deubledee </li>
-                            <li> <img src="https://github.com/fluidicon.png"> github link </li>
+                            <li> about the project </li>
+                            <li> source code </li>
                         </ul>
                     </div>
-                    <special-canvas name="methods" dimentions="600, 600" execute="[[method]]" state="[[state]]">
+                    <special-canvas name="methods" setcanvas="[[setCanvas]]" dimentions="[[dimentions]]" route="[[route]]">
                         <slot slot="canvas-slot" name="canvas">
                         </slot>
                     </special-canvas>
                 </iron-pages>
             </div>
-
+            <footer>
+                <ul>
+                    <li> by Deubledee </li>
+                    <li> about the project </li>
+                    <li>  source code </li>
+                </ul>
+            </footer>
         </div>`}
     static get is() { return 'mandelbrot-set' }
     static get properties() {
@@ -131,29 +137,66 @@ class mandelbrotSet extends fillPixels(tracePath(PolymerElement)) {
                 type: String,
                 notify: true,
                 value: ''
+            },
+            setCanvas: {
+                type: Boolean,
+                value: false,
+                notify: true
+            },
+            dimentions: {
+                type: String,
+                computed: '_getWitdh(setCanvas)',
             }
         }
     }
     static get observers() {
         return [
-            '_routePageChanged(routeData.method, query)'
+            '_routePageChanged(routeData.method)'
         ];
     }
     ready() {
         super.ready()
-        //this.addEventListener('click', (this.defaultPreventAndRoute).bind(this))
+        this._setSloted()
     }
-    _routePageChanged(method, query) {
+    _getWitdh(set) {
+        if (!!set) {
+            let str = `${window.innerWidth * 0.661111111111111}, 600`
+            return str
+        }
+    }
+    _routePageChanged(method) {
         if (method !== 'home') {
             this.method = method
-            // this.meth = true
             this.page = 'methods'
-            console.log(method, query)
+            if (!this.setCanvas) {
+                afterNextRender(this, () => {
+                    this.setCanvas = true
+                    //console.log(this.setCanvas)
+                })
+            }
         }
-        if (method === 'home') {
+        if (!method || method === 'home') {
             this.method = false
-            this.page = method
+            this.page = 'home'
         }
+    }
+    _setSloted() {
+        const canvasTemplate = () => litHtml`
+                <section slot="anchors">
+                    <special-anchor unresolved href="${this.rootPath}home?state=null" text="Home">
+                    </special-anchor>
+                </section>
+                <section slot="anchors">
+                    <special-anchor unresolved href="${this.rootPath}pixels?state=null" text="Pixels">
+                    </special-anchor>
+                </section>
+                <section slot="anchors">
+                    <special-anchor unresolved href="${this.rootPath}path?state=null" text="Path">
+                    </special-anchor>
+                </section>
+                <div id="canvas" slot="canvas"> 
+                </div>`
+        render(canvasTemplate(), this)
     }
 }
 
