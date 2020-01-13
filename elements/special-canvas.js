@@ -30,8 +30,8 @@ class specialCanvas extends fillPixels(tracePath(PolymerElement)) {
         }
         .button-area {
             grid-area: sidebar;
-        }        
-        div[title=pixels]{
+        }  
+        .pixels{
             display: grid;
             grid-template-columns: [coll1] 30% [coll2] 30% [coll3] 30%;
             grid-template-rows: [row1] auto ;
@@ -43,16 +43,6 @@ class specialCanvas extends fillPixels(tracePath(PolymerElement)) {
                 "red2 green2 blue2";    
             align-items: center;
         } 
-        .pixels1 {
-            grid-area: red; 
-        }
-        .pixels2 {
-            grid-area: green; 
-        }
-        .pixels3 {
-            grid-area: blue; 
-        }
-
         h3 {
             grid-area: title;
             text-align: center
@@ -66,17 +56,6 @@ class specialCanvas extends fillPixels(tracePath(PolymerElement)) {
             grid-area: title3;
             text-align: center
         }
-
-        div[title=path]{
-            display: grid;
-            grid-template-columns: 33.25% 33.25% 33.25%;
-            grid-template-rows: auto ;
-            grid-template-areas: 
-                "canvas sidebar";       
-            align-items: center;
-            grid-gap: 5px;
-        } 
-
         </style>       
         <app-route route="{{route}}" pattern="/:method" data="{{routeData}}" tail="{{subRoute}}" query-params="{{query}}">
         </app-route> 
@@ -86,69 +65,11 @@ class specialCanvas extends fillPixels(tracePath(PolymerElement)) {
             </div>
 
             <iron-pages class="button-area" selected="[[page]]" attr-for-selected="name">
-                <div name="pixels" title="pixels">
-                    <h3> color values </h3>                    
-                    <h4 class="h41"> within limit </h4>
-                    <div class="pixels1">   
-                        <cms-dropdown-menu 
-                            items="[[mdColorsRed]]"  
-                            horizontal-align="left" 
-                            vertical-align="top" 
-                            scroll-action="refit"
-                            res="{{mdResponse}}">            
-                        </cms-dropdown-menu> 
-                    </div>
-                    <div class="pixels2">    
-                        <cms-dropdown-menu 
-                            items="[[mdColorsGreen]]"  
-                            horizontal-align="left" 
-                            vertical-align="top" 
-                            scroll-action="refit"
-                            res="{{mdResponse}}">            
-                        </cms-dropdown-menu> 
-                    </div>
-                    <div class="pixels3">   
-                        <cms-dropdown-menu 
-                            items="[[mdColorsBlue]]"  
-                            horizontal-align="left" 
-                            vertical-align="top" 
-                            scroll-action="refit"
-                            res="{{mdResponse}}">            
-                        </cms-dropdown-menu> 
-                    </div>      
-
-                    <h4 class="h42"> out of limit </h4>   
-
-                    <div class="path">     
-                        <cms-dropdown-menu 
-                            items="[[nmdColorsRed]]"  
-                            horizontal-align="left" 
-                            vertical-align="top" 
-                            scroll-action="refit"
-                            res="{{nmdResponse}}">            
-                        </cms-dropdown-menu> 
-                    </div>
-                    <div class="path1">     
-                        <cms-dropdown-menu 
-                            items="[[nmdColorsGreen]]"  
-                            horizontal-align="left" 
-                            vertical-align="top" 
-                            scroll-action="refit"
-                            res="{{nmdResponse}}">            
-                        </cms-dropdown-menu> 
-                    </div>
-                    <div class="path2"> 
-                        <cms-dropdown-menu 
-                            items="[[nmdColorsBlue]]"  
-                            horizontal-align="left" 
-                            vertical-align="top" 
-                            scroll-action="refit"
-                            res="{{nmdResponse}}">            
-                        </cms-dropdown-menu> 
-                    </div>   
+                <div name="pixels" class="pixels">
+                    ${this.setPixelsHtml}  
                 </div>
-                <div class="button-area" name="path" title="path">
-                    
+                <div name="path" class="pixels">            
+                    ${this.setTraceHtml}        
                 </div>
             <iron-pages>
         </div>
@@ -170,46 +91,6 @@ class specialCanvas extends fillPixels(tracePath(PolymerElement)) {
             height: {
                 type: String,
                 computed: 'computeHeight(dimentions)'
-            },
-            mdColorsRed: {
-                type: Array,
-                notify: true,
-                computed: 'setColorsAndPaterns(dimentions,"red")'
-            },
-            mdColorsGreen: {
-                type: Array,
-                notify: true,
-                computed: 'setColorsAndPaterns(dimentions,"green")'
-            },
-            mdColorsBlue: {
-                type: Array,
-                notify: true,
-                computed: 'setColorsAndPaterns(dimentions,"blue")'
-            },
-            nmdColorsRed: {
-                type: Array,
-                notify: true,
-                computed: 'setColorsAndPaterns(dimentions,"red")'
-            },
-            nmdColorsGreen: {
-                type: Array,
-                notify: true,
-                computed: 'setColorsAndPaterns(dimentions,"green")'
-            },
-            nmdColorsBlue: {
-                type: Array,
-                notify: true,
-                computed: 'setColorsAndPaterns(dimentions,"blue")'
-            },
-            mdResponse: {
-                type: Object,
-                notify: true,
-                observer: '_setMdPattern'
-            },
-            nmdResponse: {
-                type: Object,
-                notify: true,
-                observer: '_setNmdPattern'
             },
             minval: {
                 type: Number,
@@ -233,7 +114,7 @@ class specialCanvas extends fillPixels(tracePath(PolymerElement)) {
             },
             limit: {
                 type: Number,
-                value: 16
+                value: 20
             },
             setcanvas: {
                 type: Boolean,
@@ -246,43 +127,17 @@ class specialCanvas extends fillPixels(tracePath(PolymerElement)) {
 
     static get observers() {
         return [
-            'runMethod(routeData, query.state)'
+            'runMethod(routeData, query.state,setcanvas)'
         ];
     }
     ready() {
         super.ready()
     }
-    setColorsAndPaterns(stop, color) {
-        if (!!stop) {
-            let arr = [], obj1 = {}, obj2 = {}
-            obj1[color] = ''
-            obj2.items = [
-                'patern1',
-                'patern2',
-                'patern3',
-                'patern4',
-                'patern5',
-                'patern6',
-                'patern7',
-                'patern8',
-                'patern9',
-                'patern10',
-                'patern11',
-                'patern12'
-            ]
-            arr.push(obj1)
-            arr.push(obj2)
-            return arr
-        }
-    }
-    runMethod(routeData, state) {
-        if (!!this.setcanvas) {
+    runMethod(routeData, state, setcanvas) {
+        if (!!setcanvas) {
             this.state = state
-            if (this.state === 'stop') {
-                this.stopAniamtion(this.state === 'stop');
-                return
-            }
-            //   if (this.state === 'null') { this.resetAniamtion(this.state === 'null'); return }
+            if (this.state === 'stop') { this.stopAniamtion(this.state === 'stop'); return }
+            if (this.state === 'null' && ['pixels', 'path'].indexOf(routeData.method) === -1) { this.resetAniamtion(this.state === 'null'); return }
             if (routeData.method === 'pixels') {
                 this.page = routeData.method
                 this.resetAniamtion(this.state === 'null')
@@ -297,6 +152,7 @@ class specialCanvas extends fillPixels(tracePath(PolymerElement)) {
                     this.startTraceAniamtion(this.ctx, this.canvas.width, this.canvas.height, this.iterationCount, this.averageLimit)
                 }
             }
+
         } else if (routeData.method === 'pixels' || routeData.method === 'path') {
             this.page = routeData.method
         }
@@ -312,20 +168,9 @@ class specialCanvas extends fillPixels(tracePath(PolymerElement)) {
             this.ctx = this.canvas.getContext('2d')
             setTimeout(() => {
                 this.ctx.fillStyle = 'black';
-                this.ctx.fillRect(0, 0, this.width, this.height);
-                console.log('set canvas', this.stop)
+                this.setIntro()
             }, 60);
         }
-    }
-    _setMdPattern(data) {
-        console.log(data);
-        let par = Object.keys(data).pop()
-        this.mdColors[par] = data[par]
-    }
-    _setNmdPattern(data) {
-        console.log(data);
-        let par = Object.keys(data).pop()
-        this.nmdColors[par] = data[par]
     }
     computeWidth(dimentions) {
         return dimentions.split(',')[0]
@@ -336,20 +181,25 @@ class specialCanvas extends fillPixels(tracePath(PolymerElement)) {
     stopAniamtion(stop) {
         if (!!stop) {
             this.stop = stop
+            window.onbeforeunload = function () { }
         }
     }
     resetAniamtion(stop) {
         if (!!stop) {
             this.stop = stop
             afterNextRender(this, () => {
-                for (var i = 0; i < 6; i++) {
-                    for (var j = 0; j < 6; j++) {
-                        this.ctx.fillStyle = 'rgb(' + Math.floor(255 - 42.5 * i) + ',' +
-                            Math.floor(255 - 42.5 * j) + ',' + Math.floor(255 - 42.5 * i) + ')';
-                        this.ctx.fillRect(j * (this.height * 0.10), i * (this.height * 0.05), this.width, this.height);
-                    }
-                }
+                this.setIntro()
+                window.onbeforeunload = function () { }
             })
+        }
+    }
+    setIntro() {
+        for (var i = 0; i < 6; i++) {
+            for (var j = 0; j < 6; j++) {
+                this.ctx.fillStyle = 'rgb(' + Math.floor(255 - 42.5 * i) + ',' +
+                    Math.floor(255 - 42.5 * j) + ',' + Math.floor(255 - 42.5 * i) + ')';
+                this.ctx.fillRect(j * (this.height * 0.10), i * (this.height * 0.05), this.width, this.height);
+            }
         }
     }
     map(value, start, stop, start2, stop2) {

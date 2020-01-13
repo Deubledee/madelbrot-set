@@ -20,7 +20,7 @@ class mandelbrotSet extends PolymerElement {
             box-sizing: border-box;
             display: grid;
             grid-template-columns: [col2] auto;
-            grid-template-rows: [row1] 100px [row2] 150px [row3] 100px [row4] auto [row4] 100px;
+            grid-template-rows: [row1] 100px [row2] 150px [row3] 100px [row4] auto [row5] auto;
             padding: 10px;
             grid-template-areas: 
                 "header"
@@ -46,30 +46,28 @@ class mandelbrotSet extends PolymerElement {
         }
         .second {
             grid-area: buttons;
-            display: grid;
-            grid-template-columns: 50% 50%;
         }
 
         .third {
             grid-area: main; 
-            height: 600px;
         }
         footer{            
             grid-area: footer;
             justify-self: center;
         }
-        .button1{
-            justify-self: end;
+
+        ::slotted(div[id=buttons]){
+            display: grid;
+            grid-template-columns: 33.25% 33.25% auto ;
         }
-        .button2 {
+
+        ::slotted(div[title=button2]) {
             justify-self: start;
         }
-        li {
+        
+        ::slotted(li) {
             list-style: none;
-        }
-        img {
-            max-height: 12px;
-        }
+        } 
         </style>
         <app-location route="{{route}}">
         </app-location>
@@ -85,18 +83,7 @@ class mandelbrotSet extends PolymerElement {
             <dom-if if="[[method]]">
                 <template>
                     <nav class="second">
-                        <div  class="button1">
-                            <paper-button title="start">
-                                <special-anchor type="button" href="[[rootPath]][[method]]?state=start" text="Start">
-                                </special-anchor>
-                            </paper-button>
-                        </div>
-                        <div class="button2">            
-                            <paper-button title="stop">
-                                <special-anchor type="button" href="[[rootPath]][[method]]?state=stop" text="Stop">
-                                </special-anchor>
-                            </paper-button>
-                        </div>
+                       <slot name="buttons"></slot>
                     </nav>
                 </template>    
             </dom-if>
@@ -104,13 +91,10 @@ class mandelbrotSet extends PolymerElement {
             <div class='third'>
                 <iron-pages selected="[[page]]" attr-for-selected="name">
                     <div name="home">
-                        <h3> The Mandelbrot set with CANVAS </h3>
-                        <ul>
-                            <li> by Deubledee </li>
-                            <li> about the project </li>
-                            <li> source code </li>
-                        </ul>
+                        <slot name="start">
+                        </slot>
                     </div>
+
                     <special-canvas name="methods" setcanvas="[[setCanvas]]" dimentions="[[dimentions]]" route="[[route]]">
                         <slot slot="canvas-slot" name="canvas">
                         </slot>
@@ -118,11 +102,8 @@ class mandelbrotSet extends PolymerElement {
                 </iron-pages>
             </div>
             <footer>
-                <ul>
-                    <li> by Deubledee </li>
-                    <li> about the project </li>
-                    <li>  source code </li>
-                </ul>
+                <slot name="footer">
+                </slot>
             </footer>
         </div>`}
     static get is() { return 'mandelbrot-set' }
@@ -160,7 +141,7 @@ class mandelbrotSet extends PolymerElement {
     }
     _getWitdh(set) {
         if (!!set) {
-            let str = `${window.innerWidth * 0.661111111111111}, 600`
+            let str = `${(window.innerWidth * 0.661111111111111) / 1.2}, ${(window.innerWidth * 0.661111111111111) / 1.2}`
             return str
         }
     }
@@ -168,10 +149,15 @@ class mandelbrotSet extends PolymerElement {
         if (method !== 'home') {
             this.method = method
             this.page = 'methods'
+            if (!!this.setCanvas)
+                afterNextRender(this, () => {
+                    this._setSlotedButtons()
+                })
+
             if (!this.setCanvas) {
                 afterNextRender(this, () => {
                     this.setCanvas = true
-                    //console.log(this.setCanvas)
+                    this._setSlotedButtons()
                 })
             }
         }
@@ -180,8 +166,24 @@ class mandelbrotSet extends PolymerElement {
             this.page = 'home'
         }
     }
+    _setSlotedButtons() {
+        const buttonsTemplate = () => litHtml`  
+                <div title="button1">
+                    <paper-button>
+                        <special-anchor type="button" .href="${this.rootPath}${this.method}?state=start" text="Start">
+                        </special-anchor>
+                    </paper-button>
+                </div>
+                <div title="button2">
+                    <paper-button>
+                        <special-anchor type="button" .href="${this.rootPath}${this.method}?state=stop" text="Stop">
+                        </special-anchor>
+                    </paper-button>
+                </div>`
+        render(buttonsTemplate(), document.querySelector('#buttons'))
+    }
     _setSloted() {
-        const canvasTemplate = () => litHtml`
+        const canvasTemplate = () => litHtml`                
                 <section slot="anchors">
                     <special-anchor unresolved href="${this.rootPath}home?state=null" text="Home">
                     </special-anchor>
@@ -194,8 +196,26 @@ class mandelbrotSet extends PolymerElement {
                     <special-anchor unresolved href="${this.rootPath}path?state=null" text="Path">
                     </special-anchor>
                 </section>
+
+                <h3 slot="start"> The Mandelbrot set with CANVAS </h3>
+                <ul slot="start">
+                    <li> by Deubledee </li>
+                    <li> about the project </li>
+                    <li> source code </li>
+                </ul>
+
+                <div id="buttons" slot="buttons">
+                </div>
+
                 <div id="canvas" slot="canvas"> 
-                </div>`
+                </div>
+                
+                <ul slot="footer"> 
+                    <li> by Deubledee </li>
+                    <li> about the project </li>
+                    <li>  source code </li>
+                </ul>
+                `
         render(canvasTemplate(), this)
     }
 }

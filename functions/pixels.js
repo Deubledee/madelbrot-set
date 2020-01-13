@@ -1,18 +1,126 @@
+
+import { html } from '@polymer/polymer';
 export const fillPixels = function (superClass) {
     return class extends superClass {
+
+        static get setPixelsHtml() {
+            return html` 
+                    <h3> color values </h3> 
+                                       
+                    <h4 class="h41"> within limit </h4> 
+
+                    <div class="pixels1">   
+                        <cms-dropdown-menu 
+                            items="[[mdPixelsColorsRed]]"  
+                            horizontal-align="left" 
+                            vertical-align="top" 
+                            scroll-action="refit"
+                            res="{{mdPixelsResponse}}">            
+                        </cms-dropdown-menu> 
+                    </div>
+                    <div class="pixels2">    
+                        <cms-dropdown-menu 
+                            items="[[mdPixelsColorsGreen]]"  
+                            horizontal-align="left" 
+                            vertical-align="top" 
+                            scroll-action="refit"
+                            res="{{mdPixelsResponse}}">            
+                        </cms-dropdown-menu> 
+                    </div>
+                    <div class="pixels3">   
+                        <cms-dropdown-menu 
+                            items="[[mdPixelsColorsBlue]]"  
+                            horizontal-align="left" 
+                            vertical-align="top" 
+                            scroll-action="refit"
+                            res="{{mdPixelsResponse}}">            
+                        </cms-dropdown-menu> 
+                    </div> 
+
+                    <h4 class="h42"> out of limit </h4>   
+
+                    <div>     
+                        <cms-dropdown-menu 
+                            items="[[nmdPixelsColorsRed]]"  
+                            horizontal-align="left" 
+                            vertical-align="top" 
+                            scroll-action="refit"
+                            res="{{nmdPixelsResponse}}">            
+                        </cms-dropdown-menu> 
+                    </div>
+                    <div>     
+                        <cms-dropdown-menu 
+                            items="[[nmdPixelsColorsGreen]]"  
+                            horizontal-align="left" 
+                            vertical-align="top" 
+                            scroll-action="refit"
+                            res="{{nmdPixelsResponse}}">            
+                        </cms-dropdown-menu> 
+                    </div>
+                    <div> 
+                        <cms-dropdown-menu 
+                            items="[[nmdPixelsColorsBlue]]"  
+                            horizontal-align="left" 
+                            vertical-align="top" 
+                            scroll-action="refit"
+                            res="{{nmdPixelsResponse}}">            
+                        </cms-dropdown-menu> 
+                    </div>
+            `
+        }
         static get properties() {
             return {
-                mdColors: {
-                    type: Object,
-                    value: { red: "patern9", green: "patern8", blue: "patern9" }
-                },
-                nmdColors: {
-                    type: Object,
-                    value: { red: "patern7", green: "patern8", blue: "patern7" }
-                },
                 averageLimit: {
                     type: Number,
                     value: 8
+                },
+                mdPixelsColors: {
+                    type: Object,
+                    value: { red: "patern7", green: "patern7", blue: "patern7" }
+                },
+                nmdPixelsColors: {
+                    type: Object,
+                    value: { red: "patern15", green: "average", blue: "patern15" }
+                },
+                mdPixelsColorsRed: {
+                    type: Array,
+                    notify: true,
+                    computed: 'setPixelsColorsAndPaterns(dimentions,"mdPixelsColors","red")'
+                },
+                mdPixelsColorsGreen: {
+                    type: Array,
+                    notify: true,
+                    computed: 'setPixelsColorsAndPaterns(dimentions,"mdPixelsColors","green")'
+                },
+                mdPixelsColorsBlue: {
+                    type: Array,
+                    notify: true,
+                    computed: 'setPixelsColorsAndPaterns(dimentions,"mdPixelsColors","blue")'
+                },
+                nmdPixelsColorsRed: {
+                    type: Array,
+                    notify: true,
+                    computed: 'setPixelsColorsAndPaterns(dimentions,"nmdPixelsColors","red")'
+                },
+                nmdPixelsColorsGreen: {
+                    type: Array,
+                    notify: true,
+                    computed: 'setPixelsColorsAndPaterns(dimentions,"nmdPixelsColors","green")'
+                },
+                nmdPixelsColorsBlue: {
+                    type: Array,
+                    notify: true,
+                    computed: 'setPixelsColorsAndPaterns(dimentions,"nmdPixelsColors","blue")'
+                },
+                mdPixelsResponse: {
+                    type: Object,
+                    notify: true,
+                    observer: '_setMdPixelsPattern'
+                },
+                nmdPixelsResponse: {
+                    type: Object,
+                    notify: true,
+                    observer: '_setNmdPixelsPattern'
                 },
                 killAnimation: Number
             }
@@ -20,9 +128,53 @@ export const fillPixels = function (superClass) {
         ready() {
             super.ready();
         }
+        _setMdPixelsPattern(data) {
+            let par = Object.keys(data).pop()
+            this.mdPixelsColors[par] = data[par]
+        }
+        _setNmdPixelsPattern(data) {
+            let par = Object.keys(data).pop()
+            this.nmdPixelsColors[par] = data[par]
+        }
+        setPixelsColorsAndPaterns(set, type, color) {
+            if (!!set) {
+                let arr = [], obj1 = {}, obj2 = {}
+                obj1[color] = this[type][color]
+                obj2.items = [
+                    'average',
+                    'patern1',
+                    'patern2',
+                    'patern3',
+                    'patern4',
+                    'patern5',
+                    'patern6',
+                    'patern7',
+                    'patern8',
+                    'patern9',
+                    'patern10',
+                    'patern11',
+                    'patern12',
+                    'patern13',
+                    'patern14',
+                    'patern15',
+                    'patern16',
+                    'patern17',
+                    'patern18',
+                    'patern19',
+                    'patern20'
+                ]
+                arr.push(obj1)
+                arr.push(obj2)
+                return arr
+            }
+        }
 
         startPixelsAnimation(ctx, width, height) {
             console.info('pixels started');
+
+            window.onbeforeunload = function () {
+                return 'playing'
+            }
             this.stop = false
             let obj = {}
             try {
@@ -58,27 +210,49 @@ export const fillPixels = function (superClass) {
                             let average = this.map(n, 0, this.iterationCount, 0, this.averageLimit);
                             average = Math.random(1) * this.map(Math.sqrt(average), 1, 0.5, 1, 255);
                             let pixelIndex = (x + y * width) * 4;
-                            obj.patern1 = (average * ca * cb * this.iterationCount)
-                            obj.patern2 = (average * cb * this.iterationCount)
-                            obj.patern3 = (average * ca * this.iterationCount)
-                            obj.patern4 = (average * a * b * this.iterationCount)
-                            obj.patern5 = (average * b * this.iterationCount)
-                            obj.patern6 = (average * a * this.iterationCount)
-                            obj.patern7 = (average * b * ca * this.iterationCount)
-                            obj.patern8 = (average * a * cb * this.iterationCount)
-                            obj.patern9 = (average * a * cb * ca * this.iterationCount)
-                            obj.patern10 = (average * b * cb * ca * this.iterationCount)
-                            obj.patern11 = (average * a * ca * this.iterationCount)
-                            obj.patern12 = (average * a * b * ca * this.iterationCount)
+                            obj.average = average
+
+                            obj.patern1 = (average * b / cb / b * this.iterationCount)
+
+                            obj.patern2 = (average * a / cb * a * this.iterationCount)
+                            obj.patern3 = (average * b / cb * b * this.iterationCount)
+
+                            obj.patern4 = (average * ca * this.iterationCount)
+
+                            obj.patern5 = (average * a * ca * a * this.iterationCount)
+                            obj.patern6 = (average * b / ca * b * this.iterationCount)
+
+                            obj.patern7 = (average * ca / cb * this.iterationCount)
+
+                            obj.patern8 = (average * a * this.iterationCount)
+
+
+                            obj.patern9 = (average * b * ca * this.iterationCount)
+                            obj.patern10 = (average * a / cb * this.iterationCount)
+
+                            obj.patern11 = (average * a / cb + b / this.iterationCount)
+
+                            obj.patern12 = (average * a / b * this.iterationCount)
+                            obj.patern13 = (average * a / b * ca * this.iterationCount)
+                            obj.patern14 = (average * a / cb * ca * this.iterationCount)
+
+                            obj.patern15 = (average * a / ca * this.iterationCount)
+                            obj.patern16 = (average * b / cb * a * this.iterationCount)
+                            obj.patern17 = (average * b / ca * a * this.iterationCount)
+
+                            obj.patern18 = (average * b / this.iterationCount)
+                            obj.patern19 = (average * a / cb * b * this.iterationCount)
+
+
                             if (n === this.iterationCount) {
-                                pixels[pixelIndex] = obj[this.mdColors.red]
-                                pixels[pixelIndex + 1] = obj[this.mdColors.green]
-                                pixels[pixelIndex + 2] = obj[this.mdColors.blue]
+                                pixels[pixelIndex] = obj[this.mdPixelsColors.red]
+                                pixels[pixelIndex + 1] = obj[this.mdPixelsColors.green]
+                                pixels[pixelIndex + 2] = obj[this.mdPixelsColors.blue]
                                 pixels[pixelIndex + 3] = 255;
                             } else {
-                                pixels[pixelIndex] = obj[this.nmdColors.red]
-                                pixels[pixelIndex + 1] = obj[this.nmdColors.green]
-                                pixels[pixelIndex + 2] = obj[this.nmdColors.blue]
+                                pixels[pixelIndex] = obj[this.nmdPixelsColors.red]
+                                pixels[pixelIndex + 1] = obj[this.nmdPixelsColors.green]
+                                pixels[pixelIndex + 2] = obj[this.nmdPixelsColors.blue]
                                 pixels[pixelIndex + 3] = 255;
                             }
                         }
