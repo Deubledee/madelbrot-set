@@ -7,9 +7,10 @@ import { html, PolymerElement } from '@polymer/polymer';
 import { html as litHtml, render } from 'lit-html';
 import { fillPixels } from '../functions/pixels';
 import { tracePath } from '../functions/trace';
+import { tracePath3d } from '../functions/3dtest';
 import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import '../elements/cms-dropdown-menu';
-class specialCanvas extends fillPixels(tracePath(PolymerElement)) {
+class specialCanvas extends tracePath3d(fillPixels(tracePath(PolymerElement))) {
     static get template() {
         return html`
         <style>
@@ -65,11 +66,14 @@ class specialCanvas extends fillPixels(tracePath(PolymerElement)) {
             </div>
 
             <iron-pages class="button-area" selected="[[page]]" attr-for-selected="name">
-                <div name="pixels" class="pixels">
+                <div name="fillpixels" class="pixels">
                     ${this.setPixelsHtml}  
                 </div>
-                <div name="path" class="pixels">            
+                <div name="tracepath" class="pixels">            
                     ${this.setTraceHtml}        
+                </div>
+                <div name="tracepath3d" class="pixels">
+                    ${this.setTrace3dHtml}        
                 </div>
             <iron-pages>
         </div>
@@ -92,30 +96,12 @@ class specialCanvas extends fillPixels(tracePath(PolymerElement)) {
                 type: String,
                 computed: 'computeHeight(dimentions)'
             },
-            minval: {
-                type: Number,
-                value: -1.5
-            },
-            maxval: {
-                type: Number,
-                value: 1.5,
-            },
+
             stop: {
                 type: Boolean,
                 value: false,
             },
-            scaleValue: {
-                type: Number,
-                value: 1,
-            },
-            iterationCount: {
-                type: Number,
-                value: 150,
-            },
-            limit: {
-                type: Number,
-                value: 20
-            },
+
             setcanvas: {
                 type: Boolean,
                 value: false,
@@ -127,34 +113,41 @@ class specialCanvas extends fillPixels(tracePath(PolymerElement)) {
 
     static get observers() {
         return [
-            'runMethod(routeData, query.state,setcanvas)'
+            'runMethod(routeData.method, query.state, setcanvas)'
         ];
     }
     ready() {
         super.ready()
     }
-    runMethod(routeData, state, setcanvas) {
+    runMethod(method, state, setcanvas) {
+        this.state = state
         if (!!setcanvas) {
-            this.state = state
             if (this.state === 'stop') { this.stopAniamtion(this.state === 'stop'); return }
-            if (this.state === 'null' && ['pixels', 'path'].indexOf(routeData.method) === -1) { this.resetAniamtion(this.state === 'null'); return }
-            if (routeData.method === 'pixels') {
-                this.page = routeData.method
+            if (this.state === 'null' && ['fillpixels', 'tracepath', 'tracepath3d'].indexOf(method) === -1) { this.resetAniamtion(this.state === 'null'); return }
+            if (method === 'fillpixels') {
+                this.page = method
                 this.resetAniamtion(this.state === 'null')
                 if (this.state === 'start') {
                     this.startPixelsAnimation(this.ctx, this.canvas.width, this.canvas.height, this.iterationCount, this.averageLimit)
                 }
             }
-            if (routeData.method === 'path') {
-                this.page = routeData.method
+            if (method === 'tracepath') {
+                this.page = method
                 this.resetAniamtion(this.state === 'null')
                 if (this.state === 'start') {
                     this.startTraceAniamtion(this.ctx, this.canvas.width, this.canvas.height, this.iterationCount, this.averageLimit)
                 }
             }
+            if (method === 'tracepath3d') {
+                this.page = method
+                this.resetAniamtion(this.state === 'null')
+                if (this.state === 'start') {
+                    this.startTrace3dAniamtion(this.ctx, this.canvas.width, this.canvas.height, this.iterationCount, this.averageLimit)
+                }
+            }
 
-        } else if (routeData.method === 'pixels' || routeData.method === 'path') {
-            this.page = routeData.method
+        } else if (method === 'fillpixels' || method === 'tracepath' || method === 'tracepath3d') {
+            this.page = method
         }
     }
     _setCanvas(data) {
@@ -167,8 +160,10 @@ class specialCanvas extends fillPixels(tracePath(PolymerElement)) {
             this.canvas.height = this.height || '600'
             this.ctx = this.canvas.getContext('2d')
             setTimeout(() => {
-                this.ctx.fillStyle = 'black';
-                this.setIntro()
+                if (this.state !== 'start') {
+                    this.ctx.fillStyle = 'black';
+                    this.setIntro()
+                }
             }, 60);
         }
     }
@@ -187,10 +182,10 @@ class specialCanvas extends fillPixels(tracePath(PolymerElement)) {
     resetAniamtion(stop) {
         if (!!stop) {
             this.stop = stop
-            afterNextRender(this, () => {
-                this.setIntro()
-                window.onbeforeunload = function () { }
-            })
+            // afterNextRender(this, () => {
+            this.setIntro()
+            window.onbeforeunload = function () { }
+            // })
         }
     }
     setIntro() {

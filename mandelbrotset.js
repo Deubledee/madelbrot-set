@@ -42,7 +42,7 @@ class mandelbrotSet extends PolymerElement {
         .first {
             grid-area: links;
             display: grid;
-            grid-template-columns: 33.25% 33.25% 33.25%;
+            grid-template-columns: 25% 25% 25% 25%;
         }
         .second {
             grid-area: buttons;
@@ -189,11 +189,15 @@ class mandelbrotSet extends PolymerElement {
                     </special-anchor>
                 </section>
                 <section slot="anchors">
-                    <special-anchor unresolved href="${this.rootPath}pixels?state=null" text="Pixels">
+                    <special-anchor unresolved href="${this.rootPath}fillpixels?state=null" text="Fill Pixels">
                     </special-anchor>
                 </section>
                 <section slot="anchors">
-                    <special-anchor unresolved href="${this.rootPath}path?state=null" text="Path">
+                    <special-anchor unresolved href="${this.rootPath}tracepath?state=null" text="Trace Path">
+                    </special-anchor>
+                </section>
+                <section slot="anchors">
+                    <special-anchor unresolved href="${this.rootPath}tracepath3d?state=null" text="Trace Path 3d">
                     </special-anchor>
                 </section>
 

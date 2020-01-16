@@ -5,9 +5,9 @@ export const fillPixels = function (superClass) {
 
         static get setPixelsHtml() {
             return html` 
-                    <h3> color values </h3> 
+                    <h3>pixels color values </h3> 
                                        
-                    <h4 class="h41"> within limit </h4> 
+                    <h4 class="h41"> within pixelsLimit </h4> 
 
                     <div class="pixels1">   
                         <cms-dropdown-menu 
@@ -37,7 +37,7 @@ export const fillPixels = function (superClass) {
                         </cms-dropdown-menu> 
                     </div> 
 
-                    <h4 class="h42"> out of limit </h4>   
+                    <h4 class="h42"> out of pixelsLimit </h4>   
 
                     <div>     
                         <cms-dropdown-menu 
@@ -76,11 +76,11 @@ export const fillPixels = function (superClass) {
                 },
                 mdPixelsColors: {
                     type: Object,
-                    value: { red: "patern7", green: "patern7", blue: "patern7" }
+                    value: { red: "patern6", green: "patern6", blue: "patern6" }
                 },
                 nmdPixelsColors: {
                     type: Object,
-                    value: { red: "patern15", green: "average", blue: "patern15" }
+                    value: { red: "patern15", green: "patern15", blue: "patern15" }
                 },
                 mdPixelsColorsRed: {
                     type: Array,
@@ -122,6 +122,26 @@ export const fillPixels = function (superClass) {
                     notify: true,
                     observer: '_setNmdPixelsPattern'
                 },
+                pixelsMinval: {
+                    type: Number,
+                    value: -1.5
+                },
+                pixelsMaxval: {
+                    type: Number,
+                    value: 1.5,
+                },
+                pixelsScaleValue: {
+                    type: Number,
+                    value: 1,
+                },
+                pixelsIterationCount: {
+                    type: Number,
+                    value: 150,
+                },
+                pixelsLimit: {
+                    type: Number,
+                    value: 20
+                },
                 killAnimation: Number
             }
         }
@@ -159,9 +179,6 @@ export const fillPixels = function (superClass) {
                     'patern15',
                     'patern16',
                     'patern17',
-                    'patern18',
-                    'patern19',
-                    'patern20'
                 ]
                 arr.push(obj1)
                 arr.push(obj2)
@@ -171,9 +188,8 @@ export const fillPixels = function (superClass) {
 
         startPixelsAnimation(ctx, width, height) {
             console.info('pixels started');
-
             window.onbeforeunload = function () {
-                return 'playing'
+                return 'playing?'
             }
             this.stop = false
             let obj = {}
@@ -185,66 +201,56 @@ export const fillPixels = function (superClass) {
                         return
                     }
                     this.killAnimation = requestAnimationFrame(drawPixels)
-                    let XPosition = this.minval,
-                        YPosition = this.maxval
+                    let XPosition = this.pixelsMinval,
+                        YPosition = this.pixelsMaxval
                     let IMAGEDATA = ctx.getImageData(0, 0, width, height)
                     let pixels = IMAGEDATA.data
 
                     for (let x = 0; x < width; x++) {
                         for (let y = 0; y < height; y++) {
-                            let a = this.map(x - 125, 0, width * this.scaleValue, XPosition, YPosition);
-                            let b = this.map(y, 0, height * this.scaleValue, XPosition, YPosition);
+                            let a = this.map(x - 125, 0, width * this.pixelsScaleValue, XPosition, YPosition);
+                            let b = this.map(y, 0, height * this.pixelsScaleValue, XPosition, YPosition);
                             let ca = a
                             let cb = b
                             let n = 0;
-                            while (n < this.iterationCount) {
+                            while (n < this.pixelsIterationCount) {
                                 let aa = a * a - b * b;
                                 let bb = 2 * a * b;
                                 a = aa + ca;
                                 b = bb + cb;
-                                if (a * a + b * b > this.limit) {
+                                if (a * a + b * b > this.pixelsLimit) {
                                     break;
                                 }
                                 n++;
                             }
-                            let average = this.map(n, 0, this.iterationCount, 0, this.averageLimit);
+                            let average = this.map(n, 0, this.pixelsIterationCount, 0, this.averageLimit);
                             average = Math.random(1) * this.map(Math.sqrt(average), 1, 0.5, 1, 255);
                             let pixelIndex = (x + y * width) * 4;
                             obj.average = average
+                            obj.patern1 = (obj.average * b / cb / b * this.pixelsIterationCount)
+                            obj.patern2 = (obj.average * (b * this.pixelsIterationCount))
+                            obj.patern3 = (obj.average * a / cb * a * this.pixelsIterationCount)
 
-                            obj.patern1 = (average * b / cb / b * this.iterationCount)
+                            obj.patern4 = (obj.average * ca * this.pixelsIterationCount)
+                            obj.patern5 = (obj.average * a * ca * a * this.pixelsIterationCount)
+                            obj.patern6 = (obj.average * ca / cb * this.pixelsIterationCount)
 
-                            obj.patern2 = (average * a / cb * a * this.iterationCount)
-                            obj.patern3 = (average * b / cb * b * this.iterationCount)
+                            obj.patern7 = (obj.average * b * ca * this.pixelsIterationCount)
+                            obj.patern8 = (obj.average * b / ca * b * this.pixelsIterationCount)
+                            obj.patern9 = (obj.average * a * this.pixelsIterationCount)
 
-                            obj.patern4 = (average * ca * this.iterationCount)
+                            obj.patern10 = (obj.average * a / cb * this.pixelsIterationCount)
+                            obj.patern11 = (obj.average * a / cb + b / this.pixelsIterationCount)
 
-                            obj.patern5 = (average * a * ca * a * this.iterationCount)
-                            obj.patern6 = (average * b / ca * b * this.iterationCount)
+                            obj.patern12 = (obj.average * a / b * this.pixelsIterationCount)
+                            obj.patern13 = (obj.average * a / b * ca * this.pixelsIterationCount)
+                            obj.patern14 = (obj.average * a / cb * ca * this.pixelsIterationCount)
 
-                            obj.patern7 = (average * ca / cb * this.iterationCount)
+                            obj.patern15 = (average * a / ca * this.pixelsIterationCount)
+                            obj.patern16 = (average * b / cb * a * this.pixelsIterationCount)
+                            obj.patern17 = (average * b / ca * a * this.pixelsIterationCount)
 
-                            obj.patern8 = (average * a * this.iterationCount)
-
-
-                            obj.patern9 = (average * b * ca * this.iterationCount)
-                            obj.patern10 = (average * a / cb * this.iterationCount)
-
-                            obj.patern11 = (average * a / cb + b / this.iterationCount)
-
-                            obj.patern12 = (average * a / b * this.iterationCount)
-                            obj.patern13 = (average * a / b * ca * this.iterationCount)
-                            obj.patern14 = (average * a / cb * ca * this.iterationCount)
-
-                            obj.patern15 = (average * a / ca * this.iterationCount)
-                            obj.patern16 = (average * b / cb * a * this.iterationCount)
-                            obj.patern17 = (average * b / ca * a * this.iterationCount)
-
-                            obj.patern18 = (average * b / this.iterationCount)
-                            obj.patern19 = (average * a / cb * b * this.iterationCount)
-
-
-                            if (n === this.iterationCount) {
+                            if (n === this.pixelsIterationCount) {
                                 pixels[pixelIndex] = obj[this.mdPixelsColors.red]
                                 pixels[pixelIndex + 1] = obj[this.mdPixelsColors.green]
                                 pixels[pixelIndex + 2] = obj[this.mdPixelsColors.blue]
