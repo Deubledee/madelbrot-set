@@ -1,9 +1,0 @@
-{
-  "name": "mandelbrotset",
-  "short_name": "mandelbrotset",
-  "icons": [],
-  "start_url": "/",
-  "background_color": "#fff",
-  "display": "standalone",
-  "theme_color": "#fff"
-}
