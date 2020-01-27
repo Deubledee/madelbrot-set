@@ -1,0 +1,9 @@
+{
+  "name": "SHOP",
+  "short_name": "SHOP",
+  "icons": [],
+  "start_url": "/",
+  "background_color": "#fff",
+  "display": "standalone",
+  "theme_color": "#fff"
+}

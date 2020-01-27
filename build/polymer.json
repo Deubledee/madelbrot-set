@@ -1,0 +1,43 @@
+{
+  "entrypoint": "index.html",
+  "shell": "mandelbrotset.js",
+  "fragments": [],
+  "sources": [
+    "elements/*",
+    "functions/*",
+    "templates/*",
+    "index.html",
+    "mandelbrotset.js"
+  ],
+  "extraDependencies": [
+    "bower_components/webcomponentsjs/*.js",
+    "manifest.json",
+    "node_modules/@webcomponents/webcomponentsjs/**"
+  ],
+  "builds": [
+    {
+      "name": "es5-bundled",
+      "js": {
+        "compile": "es5",
+        "minify": true,
+        "transformModulesToAmd": false
+      },
+      "css": {
+        "minify": false
+      },
+      "html": {
+        "minify": false
+      },
+      "bundle": true,
+      "addServiceWorker": true
+    }
+  ],
+  "lint": {
+    "rules": [
+      "polymer-3"
+    ]
+  },
+  "npm": true,
+  "componentDir": "node_modules/",
+  "moduleResolution": "node"
+}
