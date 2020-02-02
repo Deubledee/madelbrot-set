@@ -6,8 +6,8 @@ export const tracePath3d = function (superClass) {
 
         static get setTrace3dHtml() {
             return html` 
-            <h3>trace color values </h3>             
-            <div>   
+            <h3 show$="[[show]]">trace 3d color values </h3>             
+            <div class="pixels">   
                 <cms-dropdown-menu 
                     items="[[mdTrace3dColorsRed]]"  
                     horizontal-align="left" 
@@ -16,7 +16,7 @@ export const tracePath3d = function (superClass) {
                     res="{{mdTrace3dResponse}}">            
                 </cms-dropdown-menu> 
             </div>
-            <div>    
+            <div class="pixels">    
                 <cms-dropdown-menu 
                     items="[[mdTrace3dColorsGreen]]"  
                     horizontal-align="left" 
@@ -25,7 +25,7 @@ export const tracePath3d = function (superClass) {
                     res="{{mdTrace3dResponse}}">            
                 </cms-dropdown-menu> 
             </div>
-            <div>   
+            <div class="pixels">   
                 <cms-dropdown-menu 
                     items="[[mdTrace3dColorsBlue]]"  
                     horizontal-align="left" 
@@ -44,11 +44,11 @@ export const tracePath3d = function (superClass) {
                 },
                 mdTrace3dColors: {
                     type: Object,
-                    value: { red: "average", green: "patern3", blue: "average" }
+                    value: { red: "average", green: "patern4", blue: "average" }
                 },
                 nmdTrace3dColors: {
                     type: Object,
-                    value: { red: "average", green: "patern3", blue: "average" }
+                    value: { red: "average", green: "patern4", blue: "average" }
                 },
                 mdTrace3dResponse: {
                     type: Object,
@@ -177,6 +177,7 @@ export const tracePath3d = function (superClass) {
 
                             obj.patern5 = (obj.average * b * ca * this.trace3dIterationCount)
                             obj.patern6 = (obj.average * ca * ca * b * (Math.PI * this.trace3dIterationCount) * a)
+
                             obj.patern7 = ((obj.average * ca) * (cb * this.trace3dIterationCount) * (a * this.trace3dIterationCount)) * b
 
                             obj.patern8 = (obj.average * b * this.trace3dIterationCount)
@@ -204,7 +205,7 @@ export const tracePath3d = function (superClass) {
                     throw err
                 }
             }
-            drawTrace3d()
+            this.killAnimation = requestAnimationFrame(drawTrace3d)
         }
     }
 }

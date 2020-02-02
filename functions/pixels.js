@@ -5,12 +5,13 @@ export const fillPixels = function (superClass) {
 
         static get setPixelsHtml() {
             return html` 
-                    <h3>pixels color values </h3> 
+                    <h3 show$="[[show]]">pixels color values </h3> 
                                        
-                    <h4 class="h41"> within pixelsLimit </h4> 
+                    <h4 show$="[[show]]" class="h41"> within Limit </h4> 
 
-                    <div class="pixels1">   
+                    <div class="pixels">   
                         <cms-dropdown-menu 
+                            class="pixels"
                             items="[[mdPixelsColorsRed]]"  
                             horizontal-align="left" 
                             vertical-align="top" 
@@ -18,8 +19,9 @@ export const fillPixels = function (superClass) {
                             res="{{mdPixelsResponse}}">            
                         </cms-dropdown-menu> 
                     </div>
-                    <div class="pixels2">    
+                    <div class="pixels">    
                         <cms-dropdown-menu 
+                            class="pixels"
                             items="[[mdPixelsColorsGreen]]"  
                             horizontal-align="left" 
                             vertical-align="top" 
@@ -27,8 +29,9 @@ export const fillPixels = function (superClass) {
                             res="{{mdPixelsResponse}}">            
                         </cms-dropdown-menu> 
                     </div>
-                    <div class="pixels3">   
-                        <cms-dropdown-menu 
+                    <div class="pixels"> 
+                        <cms-dropdown-menu  
+                            class="pixels"
                             items="[[mdPixelsColorsBlue]]"  
                             horizontal-align="left" 
                             vertical-align="top" 
@@ -37,10 +40,11 @@ export const fillPixels = function (superClass) {
                         </cms-dropdown-menu> 
                     </div> 
 
-                    <h4 class="h42"> out of pixelsLimit </h4>   
+                    <h4 show$="[[show]]" class="h42"> out of Limit </h4>   
 
-                    <div>     
+                    <div class="pixels">      
                         <cms-dropdown-menu 
+                            class="pixels"
                             items="[[nmdPixelsColorsRed]]"  
                             horizontal-align="left" 
                             vertical-align="top" 
@@ -48,8 +52,9 @@ export const fillPixels = function (superClass) {
                             res="{{nmdPixelsResponse}}">            
                         </cms-dropdown-menu> 
                     </div>
-                    <div>     
+                    <div class="pixels">     
                         <cms-dropdown-menu 
+                            class="pixels"
                             items="[[nmdPixelsColorsGreen]]"  
                             horizontal-align="left" 
                             vertical-align="top" 
@@ -57,8 +62,9 @@ export const fillPixels = function (superClass) {
                             res="{{nmdPixelsResponse}}">            
                         </cms-dropdown-menu> 
                     </div>
-                    <div> 
+                    <div class="pixels"> 
                         <cms-dropdown-menu 
+                            class="pixels"
                             items="[[nmdPixelsColorsBlue]]"  
                             horizontal-align="left" 
                             vertical-align="top" 
@@ -265,7 +271,7 @@ export const fillPixels = function (superClass) {
                     }
                     ctx.putImageData(IMAGEDATA, 0, 0)
                 }
-                drawPixels()
+                this.killAnimation = requestAnimationFrame(drawPixels)
             }
             catch (err) {
                 this.stop = true

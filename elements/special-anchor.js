@@ -7,37 +7,66 @@ class specialAnchor extends PolymerElement {
   static get template() {
     return html`
           <style> 
-              nav{                           
-                display: grid;
-                grid-template-columns: [col1] auto;
-                grid-template-rows: [row1] auto [row2] 2px;
-                grid-template-areas: 
-                  "anchor"                    
-                  "slider"; 
-                align-items: center;
-                justify-items: center;
-              }
+            nav{                           
+              display: grid;
+              grid-template-columns: [col1] auto;
+              grid-template-rows: [row1] auto [row2] 2px;
+              grid-template-areas: 
+                "anchor"                    
+                "slider"; 
+              align-items: center;
+              justify-items: center;
+            }
+
             .anchor-div {          
               width: 127px;
               text-align: center;
               padding: 9px;
             }
+
            ::slotted(a) {
               grid-area: anchor;
               text-decoration: none;
+              color: var(--google-blue-300);
             }
+
             div[background] {
               background-color: #d0faff;
             }
+
             .spanner-div {
               grid-area: slider;
               width: 0px; 
             }
+
             div[spanner] {
               width: 160px;     
               height: 2px;         
-              box-shadow: 0px 1px 2px #5d9bb7;
+              box-shadow: 0px 1px 2px var(--light-primary-color);
               transition: width 1s ease;   
+            }
+
+          @media screen and (max-width: 1024px) {
+
+              .anchor-div{
+                width: 100px;
+              }
+
+              div[spanner] {
+                width: 100px;       
+              }
+
+            }
+          @media screen and (max-width: 600px) {
+
+              .anchor-div{
+                width: 70px;
+              }
+
+              div[spanner] {
+                width: 70px;       
+              }
+
             }
           </style>            
         <app-location route="{{route}}">
@@ -95,11 +124,11 @@ class specialAnchor extends PolymerElement {
   _routePageChanged(view, query) {
     let url = new URL(this.href)
     if (this.type === 'anchor') {
-      this.__triggerAnchor(view === url.pathname)
+      let temp = view.split('/'), temp2 = url.pathname.split('/')[1], temp3 = url.pathname.split('/')[2]
+      this.__triggerAnchor(view === url.pathname || !temp3 && temp.indexOf(temp2) !== -1)
     }
     if (this.type === 'button') {
       let Q = !!query.state ? query.state : ''
-      //  if (Q === 'null') return
       this.__triggerButton(this.text.toLowerCase() === Q)
     }
   }

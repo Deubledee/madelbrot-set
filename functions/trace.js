@@ -6,8 +6,8 @@ export const tracePath = function (superClass) {
 
         static get setTraceHtml() {
             return html` 
-            <h3>trace color values </h3>             
-            <div>   
+            <h3 show$="[[show]]">trace color values </h3>             
+            <div class="pixels">   
                 <cms-dropdown-menu 
                     items="[[mdTraceColorsRed]]"  
                     horizontal-align="left" 
@@ -16,7 +16,7 @@ export const tracePath = function (superClass) {
                     res="{{mdTraceResponse}}">            
                 </cms-dropdown-menu> 
             </div>
-            <div>    
+            <div class="pixels">    
                 <cms-dropdown-menu 
                     items="[[mdTraceColorsGreen]]"  
                     horizontal-align="left" 
@@ -25,7 +25,7 @@ export const tracePath = function (superClass) {
                     res="{{mdTraceResponse}}">            
                 </cms-dropdown-menu> 
             </div>
-            <div>   
+            <div class="pixels">   
                 <cms-dropdown-menu 
                     items="[[mdTraceColorsBlue]]"  
                     horizontal-align="left" 
@@ -162,6 +162,7 @@ export const tracePath = function (superClass) {
                             obj.patern2 = (average * b * this.traceIterationCount)
                             obj.patern3 = (average * (a * this.traceIterationCount))
                             obj.patern4 = ((average * a) % (a * this.traceIterationCount))
+
                             obj.patern5 = (obj.average * b * ca * this.traceIterationCount)
                             obj.patern6 = (average * ca / cb * this.traceIterationCount)
                             obj.patern7 = ((average * ca) / (Math.PI * this.traceIterationCount))
@@ -185,7 +186,7 @@ export const tracePath = function (superClass) {
                     throw err
                 }
             }
-            drawTrace()
+            this.killAnimation = requestAnimationFrame(drawTrace)
         }
     }
 }

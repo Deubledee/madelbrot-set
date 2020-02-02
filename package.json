@@ -1,8 +1,8 @@
 {
-  "name": "P5",
+  "name": "mandelbrot_set",
   "version": "1.0.0",
   "description": "",
-  "main": "color.js",
+  "main": "index.js",
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -43,5 +43,8 @@
     "@polymer/polymer": "^3.3.1",
     "@webcomponents/webcomponentsjs": "^2.4.0",
     "lit-html": "^1.1.2"
+  },
+  "devDependencies": {
+    "@polymer/iron-component-page": "^4.0.1"
   }
 }
